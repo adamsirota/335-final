@@ -1,0 +1,71 @@
+<%- include('layout-top') %>
+
+<div class="page-header">
+  <a href="/" class="btn btn-back">&larr; Back</a>
+  <div>
+    <span class="service-badge badge-<%= type %>"><%= type.toUpperCase() %></span>
+    <h1><%= station.name %></h1>
+    <p class="stop-meta">Stop ID: <code><%= stopId %></code>
+    <% if (station.lines && station.lines.length > 0) { %>
+      &bull; Lines: <%= station.lines.join(' · ') %>
+    <% } %>
+    </p>
+  </div>
+</div>
+
+<% if (arrivals.length === 0) { %>
+  <div class="no-data">
+    <p>No upcoming arrivals found for this stop.</p>
+    <p class="hint">MTA feed data updates every 30 seconds. Try again in a moment, or check that the stop is currently in service.</p>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="arrivals-table">
+      <thead>
+        <tr>
+          <th>Route</th>
+          <th>Direction</th>
+          <th>Arrives At</th>
+          <th>Minutes Away</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% arrivals.forEach(function(a) { %>
+          <tr>
+            <td>
+              <% if (type === 'lirr') { %>
+                <span class="route-badge route-pill"><%= a.routeId %></span>
+              <% } else { %>
+                <span class="route-badge route-<%= a.routeId.toLowerCase() %>"><%= a.routeId %></span>
+              <% } %>
+            </td>
+            <td><%- a.direction || '&mdash;' %></td>
+            <td><%= a.arrivalTime %></td>
+            <td class="minutes-col <%= a.minutesAway <= 2 ? 'arriving-soon' : '' %>">
+              <% if (a.minutesAway === 0) { %>
+                Now
+              <% } else { %>
+                <%= a.minutesAway %> min
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<!-- Save to Favorites Form -->
+<section class="save-section">
+  <h3>Save This Station</h3>
+  <p>Add <strong><%= station.name %></strong> to your favorites for quick access.</p>
+  <form action="/favorites" method="POST" class="inline-form">
+    <input type="hidden" name="stationName" value="<%= station.name %>">
+    <input type="hidden" name="stopId"      value="<%= stopId %>">
+    <input type="hidden" name="transitType" value="<%= type %>">
+    <input type="hidden" name="lines"       value="<%= (station.lines || []).join(',') %>">
+    <button type="submit" class="btn btn-save">&#9733; Add to Favorites</button>
+  </form>
+</section>
+
+<%- include('layout-bottom') %>

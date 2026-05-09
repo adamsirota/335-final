@@ -1,0 +1,50 @@
+<%- include('layout-top') %>
+
+<div class="hero">
+  <h1>Real-Time Transit Arrivals</h1>
+  <p class="hero-sub">Look up live arrival times for NYC Subway and Long Island Rail Road stations.</p>
+</div>
+
+<div class="search-grid">
+  <!-- Subway Search Form -->
+  <section class="search-panel">
+    <div class="panel-header subway-header">
+      <span class="service-icon">🚇</span>
+      <h2>NYC Subway</h2>
+    </div>
+    <form action="/arrivals/subway" method="GET" class="search-form">
+      <label for="subway-stop">Select a station:</label>
+      <select name="stopId" id="subway-stop" required>
+        <option value="">-- Choose a subway station --</option>
+        <% stations.subway.forEach(function(s) { %>
+          <option value="<%= s.stopId %>">
+            <%= s.name %> &mdash; <%= s.lines.join(' · ') %> (<%= s.borough %>)
+          </option>
+        <% }); %>
+      </select>
+      <button type="submit" class="btn btn-primary">Get Arrivals</button>
+    </form>
+  </section>
+
+  <!-- LIRR Search Form -->
+  <section class="search-panel">
+    <div class="panel-header lirr-header">
+      <span class="service-icon">🚂</span>
+      <h2>Long Island Rail Road</h2>
+    </div>
+    <form action="/arrivals/lirr" method="GET" class="search-form">
+      <label for="lirr-stop">Select a station:</label>
+      <select name="stopId" id="lirr-stop" required>
+        <option value="">-- Choose an LIRR station --</option>
+        <% stations.lirr.forEach(function(s) { %>
+          <option value="<%= s.stopId %>">
+            <%= s.name %> &mdash; <%= s.lines.join(', ') %>
+          </option>
+        <% }); %>
+      </select>
+      <button type="submit" class="btn btn-lirr">Get Arrivals</button>
+    </form>
+  </section>
+</div>
+
+<%- include('layout-bottom') %>

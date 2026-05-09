@@ -1,0 +1,58 @@
+<%- include('layout-top') %>
+
+<div class="page-header">
+  <h1>My Favorite Stations</h1>
+  <a href="/" class="btn btn-primary">+ Search Stations</a>
+</div>
+
+<% if (error === 'duplicate') { %>
+  <div class="alert alert-warn">That station is already in your favorites.</div>
+<% } %>
+
+<% if (favorites.length === 0) { %>
+  <div class="empty-state">
+    <p>No favorites saved yet.</p>
+    <p><a href="/">Search for a station</a> and click "Add to Favorites" to save it here.</p>
+  </div>
+<% } else { %>
+  <ul class="favorites-list">
+    <% favorites.forEach(function(fav) { %>
+      <li class="favorite-card" id="fav-<%= fav._id %>">
+        <div class="fav-info">
+          <div class="fav-name"><%= fav.stationName %></div>
+          <div class="fav-meta">
+            <span class="service-badge badge-<%= fav.transitType %>"><%= fav.transitType.toUpperCase() %></span>
+            <% if (fav.lines && fav.lines.length > 0) { %>
+              <span class="fav-lines"><%= fav.lines.join(' · ') %></span>
+            <% } %>
+          </div>
+          <div class="fav-date">Saved <%= new Date(fav.addedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+        </div>
+        <div class="fav-actions">
+          <a href="/arrivals/<%= fav.transitType %>?stopId=<%= fav.stopId %>" class="btn btn-lookup">
+            Check Arrivals
+          </a>
+          <button class="btn btn-delete" data-id="<%= fav._id %>">Remove</button>
+        </div>
+      </li>
+    <% }); %>
+  </ul>
+<% } %>
+
+<script>
+  document.querySelectorAll('.btn-delete').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      const id = btn.dataset.id;
+      try {
+        const res = await fetch('/favorites/' + id, { method: 'DELETE' });
+        if (res.ok) {
+          document.getElementById('fav-' + id).remove();
+        }
+      } catch (e) {
+        alert('Failed to remove favorite. Please try again.');
+      }
+    });
+  });
+</script>
+
+<%- include('layout-bottom') %>
