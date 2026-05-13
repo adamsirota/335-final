@@ -99,7 +99,7 @@ async function getArrivals(type, stopId) {
         direction,
         minutesAway: Math.round((arrivalEpoch - now) / 60),
         arrivalTime: new Date(arrivalEpoch * 1000).toLocaleTimeString('en-US', {
-          hour: '2-digit', minute: '2-digit'
+          hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York'
         })
       });
     }
